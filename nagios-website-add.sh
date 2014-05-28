@@ -103,6 +103,7 @@ while getopts "rADWw:h:sc:C:" opt; do
 	C)
 	    content_data=${OPTARG}
 	    content=1
+	    ;;
 	*)
 	    help
 	    exit 1
