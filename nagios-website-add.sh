@@ -93,6 +93,7 @@ while getopts "rADWw:h:sc:" opt; do
 	    ;;
 	r)
 	    reload=1
+	    ;;
 	*)
 	    help
 	    exit 1
