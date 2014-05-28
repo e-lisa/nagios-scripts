@@ -148,7 +148,7 @@ else
     fi
 
     # AWSTATS check, if requested
-    if [ $awstats -eq 1]; then
+    if [ $awstats -eq 1 ]; then
 	if [ $www -eq 1 ]; then
 	    set-awstats-params www.$website
 	else
