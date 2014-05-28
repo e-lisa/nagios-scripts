@@ -6,20 +6,23 @@ www=0
 cname=0
 delete=0
 awstats=0
+reload=0
 
 config_dir=/etc/nagios3/conf.d
 config_file_web=$config_dir/web_services.cfg
+init_script=/etc/init.d/nagios3
 
 export params=''
 
 function help() {
-    echo $0': [-s|-W|-A] <[-D] -w website> [-h hostname] [-c cname1,cname2,etc...]'
+    echo $0': [-s|-W|-A|-r] <[-D] -w website> [-h hostname] [-c cname1,cname2,etc...]'
     echo -e "\t-s Add SSL monitoring"
-    echo -e "\t-W Also add a monitor for the WWW record."
-    echo -e "\t-D Delete the monitor(s) for the hostname/website provided."
+    echo -e "\t-W Also add a monitor for the WWW record"
+    echo -e "\t-D Delete the monitor(s) for the hostname/website provided"
     echo -e "\t-h Provide a hostname, useful for VHOSTs"
-    echo -e "\t-c A comma seperated list of cnames to add monitors for."
+    echo -e "\t-c A comma seperated list of cnames to add monitors for"
     echo -e "\t-A Adds an AWSTATS monitor for this host"
+    echo -e "\t-r Reloads nagios after config files are updated"
 }
 
 function set-params() {
@@ -56,6 +59,7 @@ function write-config-body() {
     echo -e "\thost_name\t\t${params[2]}"
     echo -e "\tcheck_command\t\t${params[3]}"
     echo "}"
+    echo
 }
 
 function delete-monitors() {
@@ -63,7 +67,7 @@ function delete-monitors() {
 }
 
 # Process our args
-while getopts "ADWw:h:sc:" opt; do
+while getopts "rADWw:h:sc:" opt; do
     case "${opt}" in
 	s)
 	    ssl=1
@@ -87,6 +91,8 @@ while getopts "ADWw:h:sc:" opt; do
 	A)
 	    awstats=1
 	    ;;
+	r)
+	    reload=1
 	*)
 	    help
 	    exit 1
@@ -102,6 +108,13 @@ fi
 # Set host_name to website if not provided
 if [ -z ${host} ]; then
     host=$website
+fi
+
+# Confirm we have a valid hostname (could be better, but this is good enough I think)
+grep -R "host_name[ 	]*$host" $config_dir &>/dev/null
+if [ $? -ne 0 ]; then
+    echo "Error: Could not find host \`$host' in nagios configs."
+    exit 3
 fi
 
 # Prep CNAMEs (if provided) for a for loop by replacing the delimiter
@@ -159,4 +172,9 @@ else
 
     # Write out our footer
     write-config-footer >> $config_file_web
+fi
+
+if [ $reload -eq 1 ]; then
+    # Reload nagios if required
+    $init_script reload
 fi
