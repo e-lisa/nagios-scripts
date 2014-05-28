@@ -49,7 +49,7 @@ function write-config-header() {
 }
 
 function write-config-footer() {
-    echo "# END ${params[2]}"
+    echo "# END $host:$website"
 }
 
 function write-config-body() {
