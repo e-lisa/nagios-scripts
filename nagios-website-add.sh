@@ -15,7 +15,6 @@ function help() {
     echo -e "\t-D Delete the monitor(s) for the hostname/website provided."
     echo -e "\t-h Provide a hostname, useful for VHOSTs"
     echo -e "\t-c A comma seperated list of cnames to add monitors for."
-
 }
 
 function set-params() {
