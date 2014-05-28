@@ -112,28 +112,28 @@ fi
 
 # Basic HTTP check, include basic header
 set-http-params $website $host
-write-config-header
-write-config-body
+write-config-header >> $config_file_web
+write-config-body >> $config_file_web
 
 # www CNAME, special request :D
 if [ $www -eq 1 ]; then
     set-https-params www.$website $host
-    write-config-body
+    write-config-body >> $config_file_web
 fi
 
 # Additional CNAMEs if requested
 if [ $cname -eq 1 ]; then
     for name in $cnames; do
 	set-http-params $name.$website $host
-	write-config-body
+	write-config-body >> $config_file_web
     done
 fi
 
 # SSL cert check, if requeted
 if [ $ssl -eq 1 ]; then
     set-https-params $website $host
-    write-config-body
+    write-config-body >> $config_file_web
 fi
 
 # Write out our footer
-write-config-footer
+write-config-footer >> $config_file_web
