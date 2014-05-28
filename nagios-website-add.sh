@@ -115,6 +115,12 @@ set-http-params $website $host
 write-config-header
 write-config-body
 
+# www CNAME, special request :D
+if [ $www -eq 1 ]; then
+    set-https-params www.$website $host
+    write-config-body
+fi
+
 # Additional CNAMEs if requested
 if [ $cname -eq 1 ]; then
     for name in $cnames; do
