@@ -35,7 +35,7 @@ function set-http-params() {
 }
 
 function set-https-params() {
-    set-params 'http-vhost' "SSL Cert: $1" $2 "check_http_vhost2!$2!$1"
+    set-params 'http-vhost' "SSL Cert: $1" $2 "check_ssl_cert!$1"
 }
 
 function set-awstats-params() {
@@ -143,7 +143,7 @@ else
 
     # www CNAME, special request :D
     if [ $www -eq 1 ]; then
-	set-https-params www.$website $host
+	set-http-params www.$website $host
 	write-config-body >> $config_file_web
     fi
 
