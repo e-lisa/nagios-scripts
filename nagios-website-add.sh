@@ -101,7 +101,7 @@ while getopts "rADWw:h:sc:C:" opt; do
 	    reload=1
 	    ;;
 	C)
-	    content_data=${OPTARG}
+	    content_data="${OPTARG}"
 	    content=1
 	    ;;
 	*)
@@ -172,7 +172,7 @@ else
     fi
 
     if [ $content -eq 1 ]; then
-	set-content-params $website $host $content_data
+	set-content-params $website $host "$content_data"
 	write-config-body >> $config_file_web
     fi
 
