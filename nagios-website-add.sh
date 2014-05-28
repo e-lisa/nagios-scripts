@@ -63,7 +63,7 @@ function delete-monitors() {
 }
 
 # Process our args
-while getopts "DWw:h:sc:" opt; do
+while getopts "ADWw:h:sc:" opt; do
     case "${opt}" in
 	s)
 	    ssl=1
