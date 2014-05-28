@@ -5,6 +5,7 @@ ssl=0
 www=0
 cname=0
 delete=0
+awstats=0
 
 config_dir=/etc/nagios3/conf.d
 config_file_web=$config_dir/web_services.cfg
@@ -12,12 +13,13 @@ config_file_web=$config_dir/web_services.cfg
 export params=''
 
 function help() {
-    echo $0': [-s|-W|-D] <-w website> [-h hostname] [-c cname1,cname2,etc...]'
+    echo $0': [-s|-W|-A] <[-D] -w website> [-h hostname] [-c cname1,cname2,etc...]'
     echo -e "\t-s Add SSL monitoring"
     echo -e "\t-W Also add a monitor for the WWW record."
     echo -e "\t-D Delete the monitor(s) for the hostname/website provided."
     echo -e "\t-h Provide a hostname, useful for VHOSTs"
     echo -e "\t-c A comma seperated list of cnames to add monitors for."
+    echo -e "\t-A Adds an AWSTATS monitor for this host"
 }
 
 function set-params() {
@@ -31,6 +33,10 @@ function set-http-params() {
 
 function set-https-params() {
     set-params 'http-vhost' "SSL Cert: $1" $2 "check_http_vhost2!$2!$1"
+}
+
+function set-awstats-params() {
+    set-params 'check-termite' "AWSTATS: $1" "termite.fsf.org" "check_termite!$1"
 }
 
 function write-config-header() {
@@ -77,6 +83,9 @@ while getopts "DWw:h:sc:" opt; do
 	    ;;
 	D)
 	    delete=1
+	    ;;
+	A)
+	    awstats=1
 	    ;;
 	*)
 	    help
@@ -137,7 +146,17 @@ else
 	set-https-params $website $host
 	write-config-body >> $config_file_web
     fi
-    
+
+    # AWSTATS check, if requested
+    if [ $awstats -eq 1]; then
+	if [ $www -eq 1 ]; then
+	    set-awstats-params www.$website
+	else
+	    set-awstats-params $website
+	fi
+	write-config-body >> $config_file_web
+    fi
+
     # Write out our footer
     write-config-footer >> $config_file_web
 fi
